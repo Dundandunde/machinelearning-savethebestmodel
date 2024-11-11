@@ -11,9 +11,9 @@ if uploaded_file is not None:
         df
 
 st.write('**X**')
-X = df.drop(columns=["rating"])
+X = df.drop(columns=["Rating"])
 X
 
 st.write('**X**')
-Y = df.rating
+Y = df.Rating
 Y
