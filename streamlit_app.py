@@ -9,3 +9,11 @@ if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
         st.write("Dữ liệu đã tải lên:")
         df
+
+st.write('**X**')
+X = df.drop(columns=["rating"])
+X
+
+st.write('**X**')
+Y = df.rating
+Y
