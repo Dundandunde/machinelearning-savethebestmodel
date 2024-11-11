@@ -3,44 +3,38 @@ import streamlit as st
 st.title('🎈 Machine Learning')
 st.write('Hello world!')
 
-# Hàm thu thập chỉ số đánh giá cho mỗi mô hình
-def get_metrics(y_test, y_pred, model_name):
-    report = mt.classification_report(y_test, y_pred, output_dict=True)
-    return {
-        'model': model_name,
-        'precision': report['1']['precision'],
-        'recall': report['1']['recall'],
-        'f1-score': report['1']['f1-score']
-    }
+def load_model(model_name):
+    if model_name == 'Logistic Regression':
+        return joblib.load('best_logistic_model.pkl')
+    elif model_name == 'Naive Bayes':
+        return joblib.load('best_naive_bayes_model.pkl')
+    elif model_name == 'SVM':
+        return joblib.load('best_svm_model.pkl')
+    elif model_name == 'Random Forest':
+        return joblib.load('best_random_forest_model.pkl')
 
-# Thu thập kết quả cho từng mô hình
-results = [
-    get_metrics(y_test, lr.predict(X_test), 'Logistic Regression'),
-    get_metrics(y_test, nb.predict(X_test), 'Naive Bayes'),
-    get_metrics(y_test, svc.predict(X_test), 'SVM'),
-    get_metrics(y_test, rf.predict(X_test), 'Random Forest')
-]
+# Giao diện người dùng Streamlit
+st.title("Ứng Dụng Dự Đoán Mô Hình Học Máy")
 
-# Lưu vào DataFrame
-df_results = pd.DataFrame(results)
+# Chọn mô hình tốt nhất
+model_choice = st.selectbox("Chọn mô hình", ['Logistic Regression', 'Naive Bayes', 'SVM', 'Random Forest'])
 
-# Tính điểm trung bình cho từng mô hình
-df_results['mean_score'] = df_results[['precision', 'recall', 'f1-score']].mean(axis=1)
+# Tải mô hình đã chọn
+model = load_model(model_choice)
 
-# Chọn mô hình tốt nhất (mô hình có điểm trung bình cao nhất)
-best_model = df_results.loc[df_results['mean_score'].idxmax()]
+# Nhập giá trị đặc trưng từ người dùng
+st.write("Nhập các giá trị đặc trưng (features):")
 
-# Streamlit giao diện
-st.title("So sánh Mô Hình Học Máy")
+# Giả sử mô hình của bạn có 3 đặc trưng, ví dụ: feature1, feature2, feature3
+feature1 = st.number_input("Feature 1", min_value=0.0, max_value=100.0, value=0.0)
+feature2 = st.number_input("Feature 2", min_value=0.0, max_value=100.0, value=0.0)
+feature3 = st.number_input("Feature 3", min_value=0.0, max_value=100.0, value=0.0)
 
-# Hiển thị bảng kết quả
-st.subheader("Bảng kết quả đánh giá của các mô hình")
-st.dataframe(df_results)
+# Tạo DataFrame cho các giá trị đặc trưng
+input_data = np.array([[feature1, feature2, feature3]])
+input_df = pd.DataFrame(input_data, columns=['Feature1', 'Feature2', 'Feature3'])
 
-# Hiển thị mô hình tốt nhất
-st.subheader("Mô Hình Tốt Nhất")
-st.write(f"**Mô hình tốt nhất là:** {best_model['model']}")
-st.write(f"**Precision:** {best_model['precision']:.2f}")
-st.write(f"**Recall:** {best_model['recall']:.2f}")
-st.write(f"**F1-Score:** {best_model['f1-score']:.2f}")
-st.write(f"**Mean Score:** {best_model['mean_score']:.2f}")
+# Dự đoán khi người dùng nhấn nút
+if st.button("Dự Đoán"):
+    prediction = model.predict(input_df)
+    st.write(f"Prediction: {prediction[0]}")
