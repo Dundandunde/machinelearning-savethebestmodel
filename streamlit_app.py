@@ -19,7 +19,7 @@ with st.expander('Data'):
                 Y
 
     # Bước 2: Tiền xử lý dữ liệu
-    with st.expander('Tiền xử lý dữ liệu'):
+with st.expander('Tiền xử lý dữ liệu'):
         if 'text' in df.columns and 'sentiment' in df.columns:
             # Vector hóa dữ liệu văn bản
             vectorizer = TfidfVectorizer(stop_words='english')
