@@ -43,3 +43,19 @@ with st.expander('Tiền xử lý dữ liệu'):
             y_train = train_data['Sentiment']
             X_test = vectorizer.transform(test_data['review'])
             y_test = test_data['Sentiment']
+
+            # Bước 3: Huấn luyện mô hình Logistic Regression
+            model = LogisticRegression()
+            model.fit(X_train, y_train)
+            
+            # Bước 4: Dự đoán và đánh giá mô hình
+            y_pred = model.predict(X_test)
+            accuracy = accuracy_score(y_test, y_pred)
+            st.write(f"Độ chính xác của mô hình: {accuracy * 100:.2f}%")
+
+            # Lưu mô hình và vectorizer
+            joblib.dump(model, 'sentiment_model.pkl')
+            joblib.dump(vectorizer, 'vectorizer.pkl')
+            st.write("Mô hình và vectorizer đã được lưu thành công.")
+        else:
+            st.write("Dữ liệu cần có các cột 'review' và 'rating'.")
