@@ -23,44 +23,18 @@ with st.expander('Data'):
                 Y = df.Rating
                 Y
 
-    # Bước 2: Tiền xử lý dữ liệu
 with st.expander('Tiền xử lý dữ liệu'):
         df.rename(columns={"Review Text": "review", "Rating" : "rating"}, inplace = True)
-        if 'rating' in df.columns and 'review' in df.columns:
-            # Chuyển giá trị số thành nhãn văn bản
-            def rating_to_sentiment(rating):
-                if rating >= 4:
-                    return 'Tích cực'
-                elif rating == 3:
-                    return 'Trung tính'
-                else:
-                    return 'Tiêu cực'
+        df['review'] = df['review'].astype(str)  # Chuyển tất cả các giá trị thành chuỗi
+        df = df.dropna(subset=['review'])  # Xóa các hàng có giá trị NaN trong cột 'review'
+        df['review'] = df['review'].apply(clean_text)  # Loại bỏ ký tự đặc biệt
+        st.write("Các cột trong dữ liệu: ", df.columns)
 
-            # Áp dụng chuyển đổi giá trị rating thành sentiment
-            df['Sentiment'] = df['rating'].apply(rating_to_sentiment)
-            
-            # Vector hóa dữ liệu văn bản
-            vectorizer = TfidfVectorizer(min_df=1, stop_words='english')
-            
-            # Chia dữ liệu thành tập huấn luyện và kiểm tra
-            train_data, test_data = train_test_split(df, train_size=0.8, random_state=42)
-            X_train = vectorizer.fit_transform(train_data['review'])
-            y_train = train_data['Sentiment']
-            X_test = vectorizer.transform(test_data['review'])
-            y_test = test_data['Sentiment']
-
-            # Bước 3: Huấn luyện mô hình Logistic Regression
-            model = BernoulliNB()
-            model.fit(X_train, y_train)
-            
-            # Bước 4: Dự đoán và đánh giá mô hình
-            y_pred = model.predict(X_test)
-            accuracy = accuracy_score(y_test, y_pred)
-            st.write(f"Độ chính xác của mô hình: {accuracy * 100:.2f}%")
-
-            # Lưu mô hình và vectorizer
-            joblib.dump(model, 'sentiment_model.pkl')
-            joblib.dump(vectorizer, 'vectorizer.pkl')
-            st.write("Mô hình và vectorizer đã được lưu thành công.")
-        else:
-            st.write("Dữ liệu cần có các cột 'review' và 'rating'.")
+    # Kiểm tra nếu dữ liệu có cột 'review' và 'Rating'
+    if 'review' in df.columns and 'Rating' in df.columns:
+        # Chuyển 'Rating' thành 'Sentiment'
+        df['Sentiment'] = df['Rating'].apply(rating_to_sentiment)
+        
+        # Vector hóa dữ liệu văn bản
+        vectorizer = TfidfVectorizer(min_df=1, stop_words='english')
+        train_data, test_data = train_test_split(df, train_size=0.8, random_state=0)
