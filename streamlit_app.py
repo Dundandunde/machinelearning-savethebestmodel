@@ -17,8 +17,10 @@ with st.expander('Data'):
                 st.write('**Biến phụ thuộc Y**')
                 Y = df.Rating
                 Y
- # Bước 2: Tiền xử lý dữ liệu
-    with st.expander('Tiền xử lý dữ liệu'):
+
+
+    # Bước 2: Tiền xử lý dữ liệu
+with st.expander('Tiền xử lý dữ liệu'):
         if 'rating' in df.columns and 'review' in df.columns:
             # Chuyển giá trị số thành nhãn văn bản
             def rating_to_sentiment(rating):
