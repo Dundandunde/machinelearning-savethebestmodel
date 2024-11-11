@@ -29,18 +29,18 @@ with st.expander('Tiền xử lý dữ liệu'):
             X_test = vectorizer.transform(test_data['review'])  
             y_test = test_data['Sentiment']
             
-            # Bước 4: Huấn luyện mô hình Logistic Regression
-            model = BernoulliNB()
+           # Bước 3: Huấn luyện mô hình Logistic Regression
+            model =  BernoulliNB()
             model.fit(X_train, y_train)
             
-            # Dự đoán trên tập kiểm tra và tính độ chính xác
+            # Bước 4: Dự đoán và đánh giá mô hình
             y_pred = model.predict(X_test)
             accuracy = accuracy_score(y_test, y_pred)
             st.write(f"Độ chính xác của mô hình: {accuracy * 100:.2f}%")
-            
+
             # Lưu mô hình và vectorizer
             joblib.dump(model, 'sentiment_model.pkl')
             joblib.dump(vectorizer, 'vectorizer.pkl')
             st.write("Mô hình và vectorizer đã được lưu thành công.")
         else:
-            st.write("Dữ liệu cần có các cột 'text' và 'sentiment'.")
+            st.write("Dữ liệu cần có các cột 'review' và 'Sentiment'.")
