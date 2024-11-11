@@ -24,9 +24,9 @@ with st.expander('Tiền xử lý dữ liệu'):
         if 'Rating' in df.columns and 'Review Text' in df.columns:
             # Chuyển giá trị số thành nhãn văn bản
             def rating_to_sentiment(rating):
-                if Rating >= 4:
+                if rating >= 4:
                     return 'Tích cực'
-                elif Rating == 3:
+                elif rating == 3:
                     return 'Trung tính'
                 else:
                     return 'Tiêu cực'
@@ -45,7 +45,7 @@ with st.expander('Tiền xử lý dữ liệu'):
             y_test = test_data['Sentiment']
 
             # Bước 3: Huấn luyện mô hình Logistic Regression
-            model = LogisticRegression()
+            model = BernoulliNB()
             model.fit(X_train, y_train)
             
             # Bước 4: Dự đoán và đánh giá mô hình
