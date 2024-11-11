@@ -29,12 +29,3 @@ with st.expander('Tiền xử lý dữ liệu'):
         df = df.dropna(subset=['review'])  # Xóa các hàng có giá trị NaN trong cột 'review'
         df['review'] = df['review'].apply(clean_text)  # Loại bỏ ký tự đặc biệt
         st.write("Các cột trong dữ liệu: ", df.columns)
-
-    # Kiểm tra nếu dữ liệu có cột 'review' và 'Rating'
-    if 'review' in df.columns and 'Rating' in df.columns:
-        # Chuyển 'Rating' thành 'Sentiment'
-        df['Sentiment'] = df['Rating'].apply(rating_to_sentiment)
-        
-        # Vector hóa dữ liệu văn bản
-        vectorizer = TfidfVectorizer(min_df=1, stop_words='english')
-        train_data, test_data = train_test_split(df, train_size=0.8, random_state=0)
