@@ -22,11 +22,10 @@ with st.expander('Data'):
                 st.write('**Biến phụ thuộc Y**')
                 Y = df.Rating
                 Y
-                df.rename(columns={"Review Text": "review", "Rating" : "rating"}, inplace = True)
-
 
     # Bước 2: Tiền xử lý dữ liệu
 with st.expander('Tiền xử lý dữ liệu'):
+        df.rename(columns={"Review Text": "review", "Rating" : "rating"}, inplace = True)
         if 'Rating' in df.columns and 'Review Text' in df.columns:
             # Chuyển giá trị số thành nhãn văn bản
             def rating_to_sentiment(rating):
