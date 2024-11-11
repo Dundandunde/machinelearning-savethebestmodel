@@ -26,7 +26,7 @@ with st.expander('Data'):
     # Bước 2: Tiền xử lý dữ liệu
 with st.expander('Tiền xử lý dữ liệu'):
         df.rename(columns={"Review Text": "review", "Rating" : "rating"}, inplace = True)
-        if 'Rating' in df.columns and 'Review Text' in df.columns:
+        if 'rating' in df.columns and 'review' in df.columns:
             # Chuyển giá trị số thành nhãn văn bản
             def rating_to_sentiment(rating):
                 if rating >= 4:
@@ -37,7 +37,7 @@ with st.expander('Tiền xử lý dữ liệu'):
                     return 'Tiêu cực'
 
             # Áp dụng chuyển đổi giá trị rating thành sentiment
-            df['Sentiment'] = df['Rating'].apply(rating_to_sentiment)
+            df['Sentiment'] = df['rating'].apply(rating_to_sentiment)
             
             # Vector hóa dữ liệu văn bản
             vectorizer = TfidfVectorizer(min_df=1, stop_words='english')
