@@ -22,12 +22,12 @@ with st.expander('Data'):
 with st.expander('Tiền xử lý dữ liệu'):
         if 'text' in df.columns and 'sentiment' in df.columns:
             # Vector hóa dữ liệu văn bản
-            vectorizer = TfidfVectorizer(stop_words='english')
-            X = vectorizer.fit_transform(df['text'])
-            y = df['sentiment']
-            
-            # Bước 3: Chia dữ liệu thành tập huấn luyện và kiểm tra
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            vectorizer = TfidfVectorizer(min_df=1)
+            train_data,test_data = train_test_split(df,train_size=0.8,random_state=0)
+            X_train = vectorizer.fit_transform(train_data['review'])
+            y_train = train_data['Sentiment']
+            X_test = vectorizer.transform(test_data['review'])  
+            y_test = test_data['Sentiment']
             
             # Bước 4: Huấn luyện mô hình Logistic Regression
             model = BernoulliNB()
