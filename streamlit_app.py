@@ -18,10 +18,11 @@ with st.expander('Data'):
                 Y = df.Rating
                 Y
 
-with st.expanderexpander('Tiền xử lý dữ liệu')
-vectorizer = TfidfVectorizer(stop_words='english')
-        X = vectorizer.fit_transform(df['text'])
-        y = df['sentiment']
-        
-        # Bước 3: Chia dữ liệu thành tập huấn luyện và kiểm tra
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+ with st.expander('Tiền xử lý dữ liệu'):  # Sửa tại đây
+        if 'text' in df.columns and 'sentiment' in df.columns:
+            # Vector hóa dữ liệu văn bản
+            vectorizer = TfidfVectorizer(stop_words='english')
+            X = vectorizer.fit_transform(df['text'])
+            y = df['sentiment']
+                
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
