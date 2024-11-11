@@ -10,12 +10,11 @@ with st.expander('Data'):
                 df = pd.read_csv(uploaded_file)
                 st.write("Dữ liệu đã tải lên:")
                 df
-
-st.write('**Biến độc lập X**')
-X = df.drop(columns=["Rating"])
-X
-
-st.write('**Biến phụ thuộc Y**')
-Y = df.Rating
-Y
+                
+                st.write('**Biến độc lập X**')
+                X = df.drop(columns=["Rating"])
+                X
+                st.write('**Biến phụ thuộc Y**')
+                Y = df.Rating
+                Y
 
