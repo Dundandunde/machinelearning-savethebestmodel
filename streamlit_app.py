@@ -30,3 +30,16 @@ with st.expander('Tiền xử lý dữ liệu'):
                     return 'Trung tính'
                 else:
                     return 'Tiêu cực'
+
+            # Áp dụng chuyển đổi giá trị rating thành sentiment
+            df['Sentiment'] = df['rating'].apply(rating_to_sentiment)
+            
+            # Vector hóa dữ liệu văn bản
+            vectorizer = TfidfVectorizer(min_df=1, stop_words='english')
+            
+            # Chia dữ liệu thành tập huấn luyện và kiểm tra
+            train_data, test_data = train_test_split(df, train_size=0.8, random_state=42)
+            X_train = vectorizer.fit_transform(train_data['review'])
+            y_train = train_data['Sentiment']
+            X_test = vectorizer.transform(test_data['review'])
+            y_test = test_data['Sentiment']
