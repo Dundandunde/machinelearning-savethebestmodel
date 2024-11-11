@@ -44,3 +44,31 @@ with st.expander('Tiền xử lý dữ liệu'):
             st.write("Mô hình và vectorizer đã được lưu thành công.")
         else:
             st.write("Dữ liệu cần có các cột 'review' và 'Sentiment'.")
+
+st.header("Phân Tích Cảm Xúc Văn Bản Mới")
+
+# Người dùng nhập văn bản để phân tích cảm xúc
+text_input = st.text_area("Nhập văn bản cần phân tích cảm xúc", "Ví dụ: Tôi yêu ứng dụng này!")
+
+if st.button('Phân tích cảm xúc'):
+    # Kiểm tra nếu mô hình đã được tải
+    if 'sentiment_model.pkl' in locals() and 'vectorizer.pkl' in locals():
+        # Tải mô hình và vectorizer đã lưu
+        model = joblib.load('sentiment_model.pkl')
+        vectorizer = joblib.load('vectorizer.pkl')
+        
+        # Chuyển văn bản thành vector số
+        text_vectorized = vectorizer.transform([text_input])
+        
+        # Dự đoán cảm xúc
+        sentiment = model.predict(text_vectorized)
+        
+        # Hiển thị kết quả dự đoán
+        if sentiment == 1:
+            st.write("Cảm xúc: Tích cực 😃")
+        elif sentiment == 0:
+            st.write("Cảm xúc: Trung tính 😐")
+        else:
+            st.write("Cảm xúc: Tiêu cực 😞")
+    else:
+        st.write("Chưa có mô hình hoặc vectorizer đã huấn luyện.")
