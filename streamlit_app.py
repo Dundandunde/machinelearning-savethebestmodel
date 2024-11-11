@@ -22,6 +22,7 @@ with st.expander('Data'):
                 st.write('**Biến phụ thuộc Y**')
                 Y = df.Rating
                 Y
+                df.rename(columns={"Review Text": "review", "Rating" : "rating"}, inplace = True)
 
 
     # Bước 2: Tiền xử lý dữ liệu
