@@ -10,10 +10,10 @@ if uploaded_file is not None:
         st.write("Dữ liệu đã tải lên:")
         df
 
-st.write('**X**')
+st.write('**Biến độc lập X**')
 X = df.drop(columns=["Rating"])
 X
 
-st.write('**X**')
+st.write('**Biến phụ thuộc Y**')
 Y = df.Rating
 Y
