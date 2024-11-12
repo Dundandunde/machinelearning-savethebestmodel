@@ -1,11 +1,5 @@
 import pandas as pd
-import re
 import streamlit as st
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-import joblib
 from textblob import TextBlob
 import cleantext 
 st.title("Ứng Dụng Phân Tích Cảm Xúc")
