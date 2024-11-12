@@ -1,8 +1,7 @@
 from textblob import TextBlob
 import pandas as pd
 import streamlit as st
-import cleantext
-
+import clean-text
 
 st.header('Sentiment Analysis')
 with st.expander('Analyze Text'):
