@@ -74,6 +74,7 @@ with st.expander('Analyze CSV'):
     
     if upl:
         df = load_data(upl)
+        del df['Unnamed: 0']
         if df is not None:
             #Tiến hành huấn luyện mô hình Naive Bayes
             model, vectorizer = train_naive_bayes(df)
