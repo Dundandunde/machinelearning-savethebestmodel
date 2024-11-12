@@ -1,83 +1,87 @@
-from textblob import TextBlob
 import pandas as pd
 import streamlit as st
-import cleantext
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+from nltk.corpus import stopwords
 import re
+import nltk
 
-# Hàm xử lý văn bản
+# Tải stopwords từ nltk
+nltk.download('stopwords')
+stop_words = stopwords.words('english')
+
+# Hàm tiền xử lý văn bản
 def preprocess_text(text):
     if isinstance(text, str):  # Kiểm tra xem văn bản đầu vào có phải là chuỗi không
         text = re.sub(r'[^a-zA-Z\s]', '', text)  # Loại bỏ ký tự không phải chữ và khoảng trắng
         text = text.lower()  # Chuyển thành chữ thường
         text = re.sub(r'\s+', ' ', text)  # Loại bỏ khoảng trắng thừa
+        text = ' '.join([word for word in text.split() if word not in stop_words])  # Loại bỏ stopwords
         return text
     else:
         return ""  # Trả về chuỗi trống nếu không phải chuỗi văn bản
 
-# Hàm phân tích cảm xúc
-def score(x):
-    blob1 = TextBlob(x)
-    return blob1.sentiment.polarity
-
-# Hàm phân loại cảm xúc
-def analyze(x):
-    if x >= 0.5:
-        return 'Positive'
-    elif x <= -0.5:
-        return 'Negative'
+# Đọc dữ liệu từ file CSV
+def load_data(file):
+    df = pd.read_csv(file)
+    if 'Review Text' in df.columns and 'Rating' in df.columns:
+        df['cleaned_review'] = df['Review Text'].apply(preprocess_text)
+        df['Sentiment'] = df['Rating'].apply(lambda x: 'Positive' if x >= 4 else ('Neutral' if x == 3 else 'Negative'))
+        return df
     else:
-        return 'Neutral'
+        st.error("Cột 'Review Text' hoặc 'Rating' không tồn tại trong tệp CSV!")
+        return None
+
+# Hàm huấn luyện mô hình Naive Bayes
+def train_naive_bayes(df):
+    X = df['cleaned_review']
+    y = df['Sentiment']
+
+    # Vector hóa văn bản thành ma trận đặc trưng
+    vectorizer = CountVectorizer()
+    X_vect = vectorizer.fit_transform(X)
+
+    # Chia dữ liệu thành tập huấn luyện và kiểm tra
+    X_train, X_test, y_train, y_test = train_test_split(X_vect, y, test_size=0.2, random_state=42)
+
+    # Huấn luyện mô hình Naive Bayes
+    model = MultinomialNB()
+    model.fit(X_train, y_train)
+
+    # Dự đoán trên tập kiểm tra
+    y_pred = model.predict(X_test)
+
+    # Đánh giá mô hình
+    accuracy = accuracy_score(y_test, y_pred)
+    st.write(f"Độ chính xác của mô hình Naive Bayes: {accuracy * 100:.2f}%")
+
+    return model, vectorizer
+
+# Dự đoán cảm xúc của văn bản
+def predict_sentiment(model, vectorizer, text):
+    text = preprocess_text(text)  # Tiền xử lý văn bản
+    text_vect = vectorizer.transform([text])  # Chuyển văn bản thành vector
+    sentiment = model.predict(text_vect)
+    return sentiment[0]
 
 # Giao diện người dùng trên Streamlit
-st.header('Sentiment Analysis')
+st.header('Sentiment Analysis using Naive Bayes')
 
-# Phân tích văn bản nhập vào
-with st.expander('Analyze Text'):
-    text = st.text_input('Text here: ')
-    if text:
-        cleaned_text = preprocess_text(text)  # Tiền xử lý văn bản
-        if cleaned_text:  # Kiểm tra xem văn bản đã được làm sạch hay không
-            blob = TextBlob(cleaned_text)
-            st.write('Điểm tích cực: ', round(blob.sentiment.polarity, 2))
-            st.write('Điểm chủ quan: ', round(blob.sentiment.subjectivity, 2))
-        else:
-            st.warning("Văn bản nhập vào không hợp lệ hoặc quá ngắn.")
-
-# Phân tích dữ liệu từ tệp CSV
+# Tải tệp CSV và huấn luyện mô hình
 with st.expander('Analyze CSV'):
     upl = st.file_uploader('Upload file')
-
+    
     if upl:
-        df = pd.read_csv(upl)
-
-        # Kiểm tra và xử lý cột 'Review Text'
-        if 'Review Text' in df.columns:
-            # Loại bỏ các dòng có giá trị null hoặc NaN trong cột 'Review Text'
-            df = df.dropna(subset=['Review Text'])
-            
-            # Đảm bảo tất cả giá trị trong cột 'Review Text' là chuỗi
-            df['Review Text'] = df['Review Text'].apply(lambda x: str(x) if isinstance(x, (str, int, float)) else '')
-
-            # Tiền xử lý văn bản trong cột 'Review Text'
-            df['cleaned_review'] = df['Review Text'].apply(preprocess_text)
-            
-            # Áp dụng phân tích cảm xúc
-            df['score'] = df['cleaned_review'].apply(score)
-            df['analysis'] = df['score'].apply(analyze)
+        df = load_data(upl)
+        if df is not None:
+            # Tiến hành huấn luyện mô hình Naive Bayes
+            model, vectorizer = train_naive_bayes(df)
             st.write(df.head(10))
-            
-            # Chuyển đổi DataFrame thành CSV để tải xuống
-            @st.cache
-            def convert_df(df):
-                return df.to_csv().encode('utf-8')
 
-            csv = convert_df(df)
-
-            st.download_button(
-                label="Download data as CSV",
-                data=csv,
-                file_name='sentiment.csv',
-                mime='text/csv',
-            )
-        else:
-            st.error("Cột 'Review Text' không tồn tại trong tệp CSV!")
+            # Dự đoán cảm xúc cho văn bản mới
+            text = st.text_input('Enter text for sentiment prediction:')
+            if text:
+                sentiment = predict_sentiment(model, vectorizer, text)
+                st.write(f"Predicted Sentiment: {sentiment}")
