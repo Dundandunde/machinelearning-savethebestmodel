@@ -8,5 +8,5 @@ with st.expander('Analyze Text'):
     text = st.text_input('Text here: ')
     if text:
         blob = TextBlob(text)
-        st.write('Polarity: ', round(blob.sentiment.polarity,2))
-        st.write('Subjectivity: ', round(blob.sentiment.subjectivity,2))
+        st.write('Tích cực: ', round(blob.sentiment.polarity,2))
+        st.write('Tiêu cực: ', round(blob.sentiment.subjectivity,2))
