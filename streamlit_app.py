@@ -2,49 +2,75 @@ from textblob import TextBlob
 import pandas as pd
 import streamlit as st
 import cleantext
+import re
 
+# Hàm xử lý văn bản
+def preprocess_text(text):
+    if text:
+        # Chuyển về chữ thường
+        text = text.lower()
+        # Loại bỏ ký tự đặc biệt, số và khoảng trắng thừa
+        text = re.sub(r'[^a-z\s]', '', text)
+        # Xử lý văn bản bằng cleantext (có thể thêm các bước khác nếu cần)
+        text = cleantext.clean(text, clean_all=True, extra_spaces=True, stopwords=True, lowercase=True)
+        return text
+    return ""
+
+# Phân tích cảm xúc
+def score(x):
+    blob1 = TextBlob(x)
+    return blob1.sentiment.polarity
+
+# Hàm phân loại cảm xúc
+def analyze(x):
+    if x >= 0.5:
+        return 'Positive'
+    elif x <= -0.5:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+# Giao diện người dùng trên Streamlit
 st.header('Sentiment Analysis')
+
+# Phân tích văn bản nhập vào
 with st.expander('Analyze Text'):
     text = st.text_input('Text here: ')
     if text:
-        blob = TextBlob(text)
-        st.write('Điểm tích cực: ', round(blob.sentiment.polarity,2))
-        st.write('Điểm chủ quan: ', round(blob.sentiment.subjectivity,2))
+        cleaned_text = preprocess_text(text)  # Tiền xử lý văn bản
+        blob = TextBlob(cleaned_text)
+        st.write('Điểm tích cực: ', round(blob.sentiment.polarity, 2))
+        st.write('Điểm chủ quan: ', round(blob.sentiment.subjectivity, 2))
 
+# Phân tích dữ liệu từ tệp CSV
 with st.expander('Analyze CSV'):
     upl = st.file_uploader('Upload file')
 
-    def score(x):
-        blob1 = TextBlob(x)
-        return blob1.sentiment.polarity
-
-#
-    def analyze(x):
-        if x >= 0.5:
-            return 'Positive'
-        elif x <= -0.5:
-            return 'Negative'
-        else:
-            return 'Neutral'
-
-#
     if upl:
         df = pd.read_csv(upl)
-        del df['Unnamed: 0']
-        df['score'] = df['Review Text'].apply(score)
-        df['analysis'] = df['score'].apply(analyze)
-        st.write(df.head(10))
 
-        @st.cache
-        def convert_df(df):
-            # IMPORTANT: Cache the conversion to prevent computation on every rerun
-            return df.to_csv().encode('utf-8')
+        # Kiểm tra và xử lý cột 'Review Text'
+        if 'Review Text' in df.columns:
+            # Tiền xử lý văn bản trong cột 'Review Text'
+            df['cleaned_review'] = df['Review Text'].apply(preprocess_text)
+            
+            # Áp dụng phân tích cảm xúc
+            df['score'] = df['cleaned_review'].apply(score)
+            df['analysis'] = df['score'].apply(analyze)
+            st.write(df.head(10))
+            
+            # Chuyển đổi DataFrame thành CSV để tải xuống
+            @st.cache
+            def convert_df(df):
+                return df.to_csv().encode('utf-8')
 
-        csv = convert_df(df)
+            csv = convert_df(df)
 
-        st.download_button(
-            label="Download data as CSV",
-            data=csv,
-            file_name='sentiment.csv',
-            mime='text/csv',
-        )
+            st.download_button(
+                label="Download data as CSV",
+                data=csv,
+                file_name='sentiment.csv',
+                mime='text/csv',
+            )
+        else:
+            st.error("Cột 'Review Text' không tồn tại trong tệp CSV!")
