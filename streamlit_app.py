@@ -29,7 +29,7 @@ with st.expander('Analyze CSV'):
 
 #
     if upl:
-        df = pd.read_excel(upl)
+        df = pd.read_csv(upl)
         del df['Unnamed: 0']
         df['score'] = df['tweets'].apply(score)
         df['analysis'] = df['score'].apply(analyze)
