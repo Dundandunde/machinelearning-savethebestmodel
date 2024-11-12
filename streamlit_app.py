@@ -1,3 +1,4 @@
+pip install textblob
 import pandas as pd
 import streamlit as st
 from textblob import TextBlob
