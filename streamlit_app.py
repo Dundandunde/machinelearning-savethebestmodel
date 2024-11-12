@@ -75,7 +75,7 @@ with st.expander('Analyze CSV'):
     if upl:
         df = load_data(upl)
         del df['Unnamed: 0']
-        df = df.dropna(subset=['Review Text'])
+        df = df.dropna()
         if df is not None:
             #Tiến hành huấn luyện mô hình Naive Bayes
             model, vectorizer = train_naive_bayes(df)
