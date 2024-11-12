@@ -1,4 +1,4 @@
-clean-text
+clean-text==0.6.0
 nltk
 numpy
 streamlit
