@@ -11,8 +11,8 @@ def preprocess_text(text):
         text = text.lower()
         # Loại bỏ ký tự đặc biệt, số và khoảng trắng thừa
         text = re.sub(r'[^a-z\s]', '', text)
-        # Xử lý văn bản bằng cleantext (có thể thêm các bước khác nếu cần)
-        text = cleantext.clean(text, clean_all=True, extra_spaces=True, stopwords=True, lowercase=True)
+        # Chỉ sử dụng tham số 'clean_all' để làm sạch văn bản
+        text = cleantext.clean(text, clean_all=True)
         return text
     return ""
 
