@@ -7,16 +7,14 @@ import re
 # Hàm xử lý văn bản
 def preprocess_text(text):
     if text:
-        # Chuyển về chữ thường
-        text = text.lower()
-        # Loại bỏ ký tự đặc biệt, số và khoảng trắng thừa
-        text = re.sub(r'[^a-z\s]', '', text)
-        # Chỉ sử dụng tham số 'clean_all' để làm sạch văn bản
+        # Loại bỏ các ký tự không phải chữ và số
+        text = re.sub(r'[^a-zA-Z\s]', '', text)  # Chỉ giữ lại chữ cái và khoảng trắng
+        # Làm sạch văn bản bằng cleantext
         text = cleantext.clean(text, clean_all=True)
         return text
-    return ""
+    return ""  # Trả về chuỗi trống nếu không có văn bản đầu vào
 
-# Phân tích cảm xúc
+# Hàm phân tích cảm xúc
 def score(x):
     blob1 = TextBlob(x)
     return blob1.sentiment.polarity
@@ -38,9 +36,12 @@ with st.expander('Analyze Text'):
     text = st.text_input('Text here: ')
     if text:
         cleaned_text = preprocess_text(text)  # Tiền xử lý văn bản
-        blob = TextBlob(cleaned_text)
-        st.write('Điểm tích cực: ', round(blob.sentiment.polarity, 2))
-        st.write('Điểm chủ quan: ', round(blob.sentiment.subjectivity, 2))
+        if cleaned_text:  # Kiểm tra xem văn bản đã được làm sạch hay không
+            blob = TextBlob(cleaned_text)
+            st.write('Điểm tích cực: ', round(blob.sentiment.polarity, 2))
+            st.write('Điểm chủ quan: ', round(blob.sentiment.subjectivity, 2))
+        else:
+            st.warning("Văn bản nhập vào không hợp lệ hoặc quá ngắn.")
 
 # Phân tích dữ liệu từ tệp CSV
 with st.expander('Analyze CSV'):
