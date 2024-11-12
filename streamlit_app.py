@@ -1,6 +1,6 @@
+from textblob import TextBlob
 import pandas as pd
 import streamlit as st
-from textblob import TextBlob
 import cleantext 
 st.title("Ứng Dụng Phân Tích Cảm Xúc")
 
