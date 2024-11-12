@@ -1,4 +1,4 @@
-nltk==3.7
-numpy==1.23.3
-streamlit==1.13.0
-textblob==0.17.1
+nltk
+numpy
+streamlit
+textblob
