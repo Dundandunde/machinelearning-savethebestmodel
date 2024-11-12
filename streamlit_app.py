@@ -6,13 +6,12 @@ import re
 
 # Hàm xử lý văn bản
 def preprocess_text(text):
-    if text:
-        # Loại bỏ các ký tự không phải chữ và số
-        text = re.sub(r'[^a-zA-Z\s]', '', text)  # Chỉ giữ lại chữ cái và khoảng trắng
-        # Làm sạch văn bản bằng cleantext
-        text = cleantext.clean(text, clean_all=True)
+    if isinstance(text, str):  # Kiểm tra xem văn bản đầu vào có phải là chuỗi không
+        text = re.sub(r'[^a-zA-Z\s]', '', text)  # Loại bỏ các ký tự không phải chữ và khoảng trắng
+        text = cleantext.clean(text, clean_all=True)  # Làm sạch văn bản
         return text
-    return ""  # Trả về chuỗi trống nếu không có văn bản đầu vào
+    else:
+        return ""  # Trả về chuỗi trống nếu không phải chuỗi văn bản
 
 # Hàm phân tích cảm xúc
 def score(x):
@@ -52,6 +51,12 @@ with st.expander('Analyze CSV'):
 
         # Kiểm tra và xử lý cột 'Review Text'
         if 'Review Text' in df.columns:
+            # Loại bỏ các dòng có giá trị null hoặc NaN trong cột 'Review Text'
+            df = df.dropna(subset=['Review Text'])
+            
+            # Đảm bảo tất cả giá trị trong cột 'Review Text' là chuỗi
+            df['Review Text'] = df['Review Text'].apply(lambda x: str(x) if isinstance(x, (str, int, float)) else '')
+
             # Tiền xử lý văn bản trong cột 'Review Text'
             df['cleaned_review'] = df['Review Text'].apply(preprocess_text)
             
