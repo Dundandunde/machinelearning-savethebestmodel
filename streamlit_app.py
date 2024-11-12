@@ -7,8 +7,9 @@ import re
 # Hàm xử lý văn bản
 def preprocess_text(text):
     if isinstance(text, str):  # Kiểm tra xem văn bản đầu vào có phải là chuỗi không
-        text = re.sub(r'[^a-zA-Z\s]', '', text)  # Loại bỏ các ký tự không phải chữ và khoảng trắng
-        text = cleantext.clean(text, clean_all=True)  # Làm sạch văn bản
+        text = re.sub(r'[^a-zA-Z\s]', '', text)  # Loại bỏ ký tự không phải chữ và khoảng trắng
+        text = text.lower()  # Chuyển thành chữ thường
+        text = re.sub(r'\s+', ' ', text)  # Loại bỏ khoảng trắng thừa
         return text
     else:
         return ""  # Trả về chuỗi trống nếu không phải chuỗi văn bản
