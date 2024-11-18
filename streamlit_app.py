@@ -44,7 +44,7 @@ def train_naive_bayes(df):
     # Vector hóa văn bản thành ma trận đặc trưng
     vectorizer = CountVectorizer()
     X_vect = vectorizer.fit_transform(X)
-    
+
     # Chia dữ liệu thành tập huấn luyện và kiểm tra
     X_train, X_test, y_train, y_test = train_test_split(X_vect, y, test_size=0.2, random_state=42)
 
@@ -71,7 +71,7 @@ def predict_sentiment(model, vectorizer, text):
 #5. Tải tệp CSV và huấn luyện mô hình
 with st.expander('Analyze CSV'):
     upl = st.file_uploader('Upload file')
-    
+
     if upl:
         df = load_data(upl)
         del df['Unnamed: 0']
